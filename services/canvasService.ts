@@ -1,21 +1,6 @@
-// services/canvasService.js
-const axios = require("axios");
+import apiClient, { CANVAS_API_URL } from "../lib/canvasClient";
 
-// Configure Canvas API client
-const CANVAS_API_URL =
-  process.env.CANVAS_API_URL || "https://kepler.test.instructure.com/api/v1";
-const CANVAS_API_TOKEN =
-  process.env.CANVAS_API_TOKEN ||
-  `1941~BW7GkFrW3kE39P3zwwRxTU2c9XvmUB3erknQ66cEmT7aKcrF3MwtfEkeZFJt9yNh`;
 const ACCOUNT_ID = 1;
-
-const apiClient = axios.create({
-  baseURL: CANVAS_API_URL,
-  headers: {
-    Authorization: `Bearer ${CANVAS_API_TOKEN}`,
-    "Content-Type": "application/json",
-  },
-});
 
 // Handle rate limiting by implementing exponential backoff
 const retryRequest = async (request, retries = 3, delay = 1000) => {
@@ -108,8 +93,7 @@ export const createStudent = async (student) => {
  */
 export const createOrUpdateCourse = async (course) => {
   try {
-    const sis_course_id =
-      course.sis_course_id || `IMS-COURSE-${course.module_id}`;
+    const sis_course_id = course.module_code;
 
     // Try to get course by SIS ID
     try {
@@ -146,17 +130,6 @@ export const createOrUpdateCourse = async (course) => {
         throw error;
       }
     }
-    console.log("creating, --------------", {
-      name: course.module_name,
-      course_code: course.module_code,
-      sis_course_id: sis_course_id,
-      start_at: course.startDate,
-      end_at: course.endDate,
-      license: "private",
-      is_public: false,
-      public_syllabus: false,
-      public_syllabus_to_auth: false,
-    });
 
     // Create new course in Canvas
     const createResponse = await retryRequest(() =>

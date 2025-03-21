@@ -19,6 +19,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "node-thermal-printer": "^4.4.4",
+    "serialport": "^13.0.0"
   }
 }
