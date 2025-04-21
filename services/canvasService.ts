@@ -37,7 +37,7 @@ export const createStudent = async (student) => {
     const { data } = await retryRequest(
       () =>
         apiClient.get(
-          `/accounts/${ACCOUNT_ID}/users?search_term=${student?.email}`
+          `/accounts/${ACCOUNT_ID}/users?search_term=${student.email}`
         ),
       0
     );
@@ -51,9 +51,11 @@ export const createStudent = async (student) => {
             name: `${student.family_name} ${student.first_name}`,
             short_name: student.first_name,
             sortable_name: `${student.first_name}, ${student.family_name}`,
+            // sis_user_id: student.Identification,
           },
         })
       );
+
       return updateResponse.data;
     } else {
       const obj = {
@@ -82,6 +84,10 @@ export const createStudent = async (student) => {
       return createResponse.data;
     }
   } catch (error) {
+    console.error(
+      `Canvas API Error:`,
+      JSON.stringify(error.response?.data?.errors, null, 2) || error.message
+    );
     throw Error(`Failed to sync student -> ${student.email}`);
   }
 };
@@ -135,7 +141,7 @@ export const createOrUpdateCourse = async (course) => {
     const createResponse = await retryRequest(() =>
       apiClient.post(`/accounts/${ACCOUNT_ID}/courses`, {
         course: {
-          name: course.module_name,
+          name: course.name,
           course_code: course.module_code,
           sis_course_id: sis_course_id,
           start_at: course.startDate,
